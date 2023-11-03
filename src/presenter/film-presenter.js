@@ -17,10 +17,11 @@ export default class FilmPresenter {
   filmsListComponent = new FilmsListView();
   cardContainerComponent = new FilmsListContainerView();
   showMoreComponent = new ShowMoreView();
-  popupComponent = new PopupView();
 
-  init(container) {
+  init(container, movieList) {
     this.container = container;
+    this.movieList = movieList;
+    this.movies = this.movieList.getMovieList();
 
     render(this.menuComponent, this.container);
     render(this.sortComponent, this.container);
@@ -29,8 +30,9 @@ export default class FilmPresenter {
     // основной блок с фильмами
     render(this.filmsListComponent, this.filmsComponent.getElement());
     render(this.cardContainerComponent, this.filmsListComponent.getElement());
-    for (let i = 0; i < 5; i++) {
-      render(new CardView(), this.cardContainerComponent.getElement());
+
+    for (const movie of this.movies) {
+      render(new CardView(movie), this.cardContainerComponent.getElement());
     }
 
     render(this.showMoreComponent, this.filmsComponent.getElement());
@@ -41,6 +43,6 @@ export default class FilmPresenter {
     }
 
     // popup
-    render(this.popupComponent, this.container);
+    render(new PopupView(this.movies[1]), this.container);
   }
 }
