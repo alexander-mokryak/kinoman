@@ -22,24 +22,28 @@ const createCardViewTemplate = ({title, totalRating, poster}) =>
   </article>`;
 
 export default class CardView {
+  #element = null;
+  #movie = null;
+
+
   constructor(movie) {
-    this.movie = movie;
-    this.filmInfo = this.movie.filmInfo;
+    this.#movie = movie;
+    this.filmInfo = this.#movie.filmInfo;
   }
 
-  getTemplate() {
+  get template() {
     return createCardViewTemplate(this.filmInfo);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

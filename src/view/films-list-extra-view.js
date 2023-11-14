@@ -1,5 +1,4 @@
 import {createElement} from '../render.js';
-import CardView from './card-view';
 
 const createFilmsListExtraViewTemplate = () => `
   <section class="films-list films-list--extra">
@@ -49,20 +48,22 @@ const createFilmsListExtraViewTemplate = () => `
 `;
 
 export default class FilmsListExtraView {
-  getTemplate() {
+  #element = null;
+
+  get template() {
     return createFilmsListExtraViewTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
 
