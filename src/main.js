@@ -12,8 +12,8 @@ const headerElement = document.querySelector('.header');
 render(new ProfileView(), headerElement);
 
 const mainElement = document.querySelector('.main');
-const mainContent = new FilmPresenter();
-mainContent.init(mainElement, movieList);
+const mainContent = new FilmPresenter(mainElement, movieList);
+mainContent.init();
 
 const footerElement = document.querySelector('.footer__statistics');
 render(new StatisticsView(), footerElement);

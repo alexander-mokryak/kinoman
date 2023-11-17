@@ -15,9 +15,11 @@ const SHOW_FILMS_PER_STEP = 5;
 export default class FilmPresenter {
   #menuComponent = new MenuView();
   #sortComponent = new SortView();
+
   #filmsComponent = new FilmsView();
   #filmsListComponent = new FilmsListView();
   #cardContainerComponent = new FilmsListContainerView();
+
   #showMoreButtonComponent = new ShowMoreView();
 
   #container = null;
@@ -27,26 +29,36 @@ export default class FilmPresenter {
   #FilmDetailsComponent = null;
   #currentFilmIndex = 0;
 
-  init(container, films) {
+  constructor(container, films) {
     this.#container = container;
     this.#filmList = films;
-    this.#films = [...this.#filmList.filmList];
+  }
 
+  init() {
+    this.#films = [...this.#filmList.filmList];
+    this.#renderBoard();
+  }
+
+
+  #renderBoard() {
     render(this.#menuComponent, this.#container);
     render(this.#sortComponent, this.#container);
+
     // блок с фильмами
     render(this.#filmsComponent, this.#container);
     // основной блок с фильмами
     render(this.#filmsListComponent, this.#filmsComponent.element);
 
-
     if (this.#films.length > 0) {
       render(this.#cardContainerComponent, this.#filmsListComponent.element);
+
       for (let i = 0; i < Math.min(SHOW_FILMS_PER_STEP, this.#films.length); i++) {
         this.#renderFilmCard(this.#films[i], this.#cardContainerComponent);
         this.#currentFilmIndex += 1;
       }
-      render(this.#showMoreButtonComponent, this.#filmsComponent.element);
+      if (this.#films.length > 5) {
+        render(this.#showMoreButtonComponent, this.#filmsComponent.element);
+      }
 
       this.#showMoreButtonComponent.element.addEventListener('click', this.#handleShowMoreButtonClick);
     } else {
