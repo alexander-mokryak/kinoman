@@ -10,24 +10,27 @@ import ShowMoreView from '../view/show-more-view';
 import FilmsListExtraView from '../view/films-list-extra-view';
 import PopupView from '../view/popup-view';
 
+const SHOW_FILMS_PER_STEP = 5;
+
 export default class FilmPresenter {
   #menuComponent = new MenuView();
   #sortComponent = new SortView();
   #filmsComponent = new FilmsView();
   #filmsListComponent = new FilmsListView();
   #cardContainerComponent = new FilmsListContainerView();
-  #showMoreComponent = new ShowMoreView();
+  #showMoreButtonComponent = new ShowMoreView();
 
   #container = null;
-  #movieList = null;
-  #movies = [];
+  #filmList = null;
+  #films = [];
 
   #FilmDetailsComponent = null;
+  #currentFilmIndex = 0;
 
-  init(container, movieList) {
+  init(container, films) {
     this.#container = container;
-    this.#movieList = movieList;
-    this.#movies = [...this.#movieList.movieList];
+    this.#filmList = films;
+    this.#films = [...this.#filmList.filmList];
 
     render(this.#menuComponent, this.#container);
     render(this.#sortComponent, this.#container);
@@ -35,19 +38,49 @@ export default class FilmPresenter {
     render(this.#filmsComponent, this.#container);
     // основной блок с фильмами
     render(this.#filmsListComponent, this.#filmsComponent.element);
-    render(this.#cardContainerComponent, this.#filmsListComponent.element);
 
-    for (const movie of this.#movies) {
-      this.#renderFilmCard(movie, this.#cardContainerComponent);
+
+    if (this.#films.length > 0) {
+      render(this.#cardContainerComponent, this.#filmsListComponent.element);
+      for (let i = 0; i < Math.min(SHOW_FILMS_PER_STEP, this.#films.length); i++) {
+        this.#renderFilmCard(this.#films[i], this.#cardContainerComponent);
+        this.#currentFilmIndex += 1;
+      }
+      render(this.#showMoreButtonComponent, this.#filmsComponent.element);
+
+      this.#showMoreButtonComponent.element.addEventListener('click', this.#handleShowMoreButtonClick);
+    } else {
+      const title = this.#filmsListComponent.element.querySelector('.films-list__title');
+      title.classList.remove('visually-hidden');
+      title.innerHTML = 'There are no movies in our database';
+      //  TODO
+      /* Значение отображаемого текста зависит от выбранного фильтра:
+      *  All movies – 'There are no movies in our database'
+      *  Watchlist — 'There are no movies to watch now';
+      *  History — 'There are no watched movies now';
+      *  Favorites — 'There are no favorite movies now'
+       */
     }
-
-    render(this.#showMoreComponent, this.#filmsComponent.element);
 
     //extra блок с фильмами
     for (let i = 0; i < 2; i++) {
       render(new FilmsListExtraView(), this.#filmsComponent.element);
     }
   }
+
+
+  #handleShowMoreButtonClick = (evt) => {
+    evt.preventDefault();
+    this.#films
+      .slice(this.#currentFilmIndex, this.#currentFilmIndex + SHOW_FILMS_PER_STEP)
+      .forEach((film) => this.#renderFilmCard(film, this.#cardContainerComponent));
+    this.#currentFilmIndex += SHOW_FILMS_PER_STEP;
+
+    if (this.#currentFilmIndex >= this.#films.length) {
+      this.#showMoreButtonComponent.element.remove();
+      this.#showMoreButtonComponent.removeElement();
+    }
+  };
 
 
   #renderFilmCard(film, container) {

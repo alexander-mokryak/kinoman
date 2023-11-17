@@ -1,9 +1,9 @@
 import {generateMovieData} from '../mock/data';
 
 export default class MovieList {
-  #list = Array.from({length: 5}, generateMovieData);
+  #list = Array.from({length: 16}, generateMovieData);
 
-  get movieList () {
+  get filmList () {
     return this.#list;
   }
 }
