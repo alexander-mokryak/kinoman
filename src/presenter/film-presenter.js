@@ -9,6 +9,7 @@ import CardView from '../view/card-view';
 import ShowMoreView from '../view/show-more-view';
 import FilmsListExtraView from '../view/films-list-extra-view';
 import PopupView from '../view/popup-view';
+import ErrorMoviesView from '../view/error-movies-view';
 
 const SHOW_FILMS_PER_STEP = 5;
 
@@ -19,6 +20,7 @@ export default class FilmPresenter {
   #filmsComponent = new FilmsView();
   #filmsListComponent = new FilmsListView();
   #cardContainerComponent = new FilmsListContainerView();
+  #errorComponent = new ErrorMoviesView();
 
   #showMoreButtonComponent = new ShowMoreView();
 
@@ -62,16 +64,7 @@ export default class FilmPresenter {
 
       this.#showMoreButtonComponent.element.addEventListener('click', this.#handleShowMoreButtonClick);
     } else {
-      const title = this.#filmsListComponent.element.querySelector('.films-list__title');
-      title.classList.remove('visually-hidden');
-      title.innerHTML = 'There are no movies in our database';
-      //  TODO
-      /* Значение отображаемого текста зависит от выбранного фильтра:
-      *  All movies – 'There are no movies in our database'
-      *  Watchlist — 'There are no movies to watch now';
-      *  History — 'There are no watched movies now';
-      *  Favorites — 'There are no favorite movies now'
-       */
+      render(this.#errorComponent, this.#filmsListComponent.element);
     }
 
     //extra блок с фильмами

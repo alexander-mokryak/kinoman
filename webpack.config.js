@@ -22,8 +22,9 @@ module.exports = {
         use: ['babel-loader'] // какой лоадер использовать
      },
       {
-        test:/\.css$/i,
-        use: ['style-loader', 'css-loader'], // добавит атрибут тэг style + научит загружать JS - CSS
+        test: /\.css$/i,
+        // добавит атрибут тэг style + научит загружать JS - CSS
+        use: ['style-loader', 'css-loader']
       }
    ]
   }
