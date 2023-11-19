@@ -147,4 +147,18 @@ export default class PopupView extends AbstractView {
   get template() {
     return createPopupTemplate(this.movie);
   }
+
+  setClickHandler = (callback) => {
+    // callback записывается во внутреннее свойство, иначе пришлось бы
+    // работать с добавлением/удалением обработчика где-то снаружи
+    this._callback.click = callback;
+    // в addEventListener передаем абстрактный обработчик
+    this.element.querySelector('.film-details__close').addEventListener('click', this.#clickHandler);
+  };
+
+  #clickHandler= (evt) => {
+    evt.preventDefault();
+    // внутри абстрактного обработчика вызовем callback
+    this._callback.click();
+  };
 }

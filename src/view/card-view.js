@@ -33,4 +33,18 @@ export default class CardView extends AbstractView {
   get template() {
     return createCardViewTemplate(this.filmInfo);
   }
+
+  setClickHandler = (callback) => {
+    // callback записывается во внутреннее свойство, иначе пришлось бы
+    // работать с добавлением/удалением обработчика где-то снаружи
+    this._callback.click = callback;
+    // в addEventListener передаем абстрактный обработчик
+    this.element.querySelector('a').addEventListener('click', this.#clickHandler);
+  };
+
+  #clickHandler= (evt) => {
+    evt.preventDefault();
+    // внутри абстрактного обработчика вызовем callback
+    this._callback.click();
+  };
 }
