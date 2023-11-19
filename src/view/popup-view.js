@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view';
 import {EMOTION_DATA} from '../const.js';
 
 const createComments = (comments) => {
@@ -138,26 +138,13 @@ const createPopupTemplate = ({comments, filmInfo}) => `
   </section>
 `;
 
-export default class PopupView {
-  #element = null;
-
+export default class PopupView extends AbstractView {
   constructor(movie) {
+    super();
     this.movie = movie;
   }
 
   get template() {
     return createPopupTemplate(this.movie);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
