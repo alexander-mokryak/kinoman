@@ -1,4 +1,4 @@
-import {render} from './render';
+import {render} from './framework/render.js';
 import FilmPresenter from './presenter/film-presenter';
 
 import ProfileView from './view/profile-view';
