@@ -17,4 +17,10 @@ const EMOTION_DATA = {
   },
 };
 
-export {EMOTION_DATA};
+const USER_STATUS = {
+  NOVICE: 1,
+  FAN: 11,
+  MOVIE_BUFF: 21,
+};
+
+export {EMOTION_DATA, USER_STATUS};

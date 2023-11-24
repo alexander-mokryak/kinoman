@@ -1,4 +1,4 @@
-import {getRandomInteger, generateRandomId, correctFilmTime, getRandomFloat, convertSnakeToCamel} from '../utils';
+import {getRandomInteger, generateRandomId, correctFilmTime, getRandomFloat, convertSnakeToCamel} from '../utils/utils';
 import dayjs from 'dayjs';
 
 const movieId = generateRandomId(0, 900);
@@ -78,6 +78,8 @@ const getRandomPoster = () => {
   return(POSTERS[randomIndex]);
 };
 
+const alreadyWatched = () => Boolean(getRandomInteger(0,1));
+
 export const generateMovieData = () => ({
   'id': movieId(),
   'comments': [
@@ -110,9 +112,9 @@ export const generateMovieData = () => ({
     'description': 'Oscar-winning film, a war drama about two young people, from the creators of timeless classic \'Nu, Pogodi!\' and \'Alice in Wonderland\', with the best fight scenes since Bruce Lee.'
   },
   [`${convertSnakeToCamel('user_details')}`]: {
-    'watchlist': false,
-    [`${convertSnakeToCamel('already_watched')}`]: true,
-    [`${convertSnakeToCamel('watching_date')}`]: '2019-04-12T16:12:32.554Z',
-    'favorite': false
+    'watchlist': Boolean(getRandomInteger(0,1)),
+    alreadyWatched: alreadyWatched(),
+    [`${convertSnakeToCamel('watching_date')}`]: alreadyWatched() ?  '2019-04-12T16:12:32.554Z' : null, //getWatchingDate add function
+    'favorite': Boolean(getRandomInteger(0,1))
   }
 });
