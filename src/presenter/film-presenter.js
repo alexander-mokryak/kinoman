@@ -1,5 +1,5 @@
 import {render} from '../framework/render.js';
-import MenuView from '../view/menu-view';
+import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
 import FilmsView from '../view/films-view';
 import FilmsListView from '../view/films-list-view';
@@ -42,7 +42,7 @@ export default class FilmPresenter {
 
 
   #renderBoard() {
-    const filterComponent = new MenuView(generateFilter(this.#films));
+    const filterComponent = new FilterView(generateFilter(this.#films));
     render(filterComponent, this.#container);
     render(this.#sortComponent, this.#container);
 
