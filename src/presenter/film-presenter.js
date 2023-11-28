@@ -9,11 +9,11 @@ import ShowMoreView from '../view/show-more-view';
 import FilmsListExtraView from '../view/films-list-extra-view';
 import PopupView from '../view/popup-view';
 import ErrorMoviesView from '../view/error-movies-view';
+import {generateFilter} from '../mock/filter.js';
 
 const SHOW_FILMS_PER_STEP = 5;
 
 export default class FilmPresenter {
-  #menuComponent = new MenuView();
   #sortComponent = new SortView();
 
   #filmsComponent = new FilmsView();
@@ -42,7 +42,8 @@ export default class FilmPresenter {
 
 
   #renderBoard() {
-    render(this.#menuComponent, this.#container);
+    const filterComponent = new MenuView(generateFilter(this.#films));
+    render(filterComponent, this.#container);
     render(this.#sortComponent, this.#container);
 
     // блок с фильмами

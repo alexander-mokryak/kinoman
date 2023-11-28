@@ -23,4 +23,11 @@ const USER_STATUS = {
   MOVIE_BUFF: 21,
 };
 
-export {EMOTION_DATA, USER_STATUS};
+const FilterType = {
+  ALL: 'all',
+  WATCHLIST: 'watchlist',
+  HISTORY: 'history',
+  FAVORITES: 'favorites'
+};
+
+export {EMOTION_DATA, USER_STATUS, FilterType};
