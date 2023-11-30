@@ -1,4 +1,4 @@
-import {render} from '../framework/render.js';
+import {remove, render} from '../framework/render.js';
 import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
 import FilmsView from '../view/films-view';
@@ -6,30 +6,32 @@ import FilmsListView from '../view/films-list-view';
 import FilmsListContainerView from '../view/films-card-container-view';
 import ShowMoreView from '../view/show-more-view';
 import FilmsListExtraView from '../view/films-list-extra-view';
-import PopupView from '../view/popup-view';
 import ErrorMoviesView from '../view/error-movies-view';
 import {generateFilter} from '../mock/filter.js';
 import FilmPresenter from './film-presenter';
+import {updateItem} from '../utils/utils';
 
 const SHOW_FILMS_PER_STEP = 5;
 
 export default class MainPresenter {
-  #sortComponent = new SortView();
   #filmsComponent = new FilmsView();
   #filmsListComponent = new FilmsListView();
   #cardContainerComponent = new FilmsListContainerView();
   #errorComponent = new ErrorMoviesView();
   #showMoreButtonComponent = new ShowMoreView();
+  #filmPresenter = new Map();
 
   #container = null;
   #filmList = null;
   #films = [];
   #currentFilmIndex = 0;
 
+
   constructor(container, films) {
     this.#container = container;
     this.#filmList = films;
   }
+
 
   init() {
     this.#films = [...this.#filmList.filmList];
@@ -37,10 +39,15 @@ export default class MainPresenter {
   }
 
 
+  #filmChangeHandler = (updatedFilm) => {
+    this.#films = updateItem(this.#films, updatedFilm);
+    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm);
+  };
+
+
   #renderBoard() {
-    const filterComponent = new FilterView(generateFilter(this.#films));
-    render(filterComponent, this.#container);
-    render(this.#sortComponent, this.#container);
+    this.#renderFilters(this.#films, this.#container);
+    this.#renderSort(this.#container);
 
     // блок с фильмами
     render(this.#filmsComponent, this.#container);
@@ -71,6 +78,32 @@ export default class MainPresenter {
   }
 
 
+  #renderFilters(films, container) {
+    const filterComponent = new FilterView(generateFilter(films));
+    render(filterComponent, container);
+  }
+
+
+  #renderSort(container) {
+    const sortComponent = new SortView();
+    render(sortComponent, container);
+  }
+
+
+  #renderFilmCard(film, container) {
+    const filmPresenter = new FilmPresenter(container, this.#filmChangeHandler);
+    filmPresenter.init(film);
+    this.#filmPresenter.set(film.id, filmPresenter);
+  }
+
+
+  #clearFilmCards() {
+    this.#filmPresenter.forEach((presenter) => presenter.destroy());
+    this.#filmPresenter.clear();
+    this.#currentFilmIndex = 0;
+    remove(this.#showMoreButtonComponent);
+  }
+
   #handleShowMoreButtonClick = () => {
     this.#films
       .slice(this.#currentFilmIndex, this.#currentFilmIndex + SHOW_FILMS_PER_STEP)
@@ -82,10 +115,4 @@ export default class MainPresenter {
       this.#showMoreButtonComponent.removeElement();
     }
   };
-
-
-  #renderFilmCard(film, container) {
-    const filmPresenter = new FilmPresenter(container);
-    filmPresenter.init(film);
-  }
 }

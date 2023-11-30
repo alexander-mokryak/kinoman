@@ -156,9 +156,58 @@ export default class PopupView extends AbstractView {
     this.element.querySelector('.film-details__close').addEventListener('click', this.#clickHandler);
   };
 
+
+  setWatchListClickHandler = (callback) => {
+    // callback записывается во внутреннее свойство, иначе пришлось бы
+    // работать с добавлением/удалением обработчика где-то снаружи
+    this._callback.addToWatch = callback;
+    // в addEventListener передаем абстрактный обработчик
+    this.element.querySelector('#watchlist').addEventListener('click', this.#watchClickHandler);
+  };
+
+
+  setAlreadyWatchedClickHandler = (callback) => {
+    // callback записывается во внутреннее свойство, иначе пришлось бы
+    // работать с добавлением/удалением обработчика где-то снаружи
+    this._callback.watched = callback;
+    // в addEventListener передаем абстрактный обработчик
+    this.element.querySelector('#watched').addEventListener('click', this.#watchedClickHandler);
+  };
+
+
+  setFavoriteClickHandler = (callback) => {
+    // callback записывается во внутреннее свойство, иначе пришлось бы
+    // работать с добавлением/удалением обработчика где-то снаружи
+    this._callback.favorite = callback;
+    // в addEventListener передаем абстрактный обработчик
+    this.element.querySelector('#favorite').addEventListener('click', this.#favoriteClickHandler);
+  };
+
+
   #clickHandler= (evt) => {
     evt.preventDefault();
     // внутри абстрактного обработчика вызовем callback
     this._callback.click();
+  };
+
+
+  #watchClickHandler= (evt) => {
+    evt.preventDefault();
+    // внутри абстрактного обработчика вызовем callback
+    this._callback.addToWatch();
+  };
+
+
+  #watchedClickHandler= (evt) => {
+    evt.preventDefault();
+    // внутри абстрактного обработчика вызовем callback
+    this._callback.watched();
+  };
+
+
+  #favoriteClickHandler= (evt) => {
+    evt.preventDefault();
+    // внутри абстрактного обработчика вызовем callback
+    this._callback.favorite();
   };
 }

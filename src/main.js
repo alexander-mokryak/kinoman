@@ -18,3 +18,6 @@ mainContent.init();
 
 const footerElement = document.querySelector('.footer__statistics');
 render(new StatisticsView(), footerElement);
+
+// TODO возможность переиспользования компонетов
+// https://up.htmlacademy.ru/profession/react-lite/3/lite-javascript-2/2/module/5/item/2#

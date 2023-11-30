@@ -1,7 +1,8 @@
-import {getRandomInteger, generateRandomId, correctFilmTime, getRandomFloat, convertSnakeToCamel} from '../utils/utils';
+import {getRandomInteger, correctFilmTime, getRandomFloat, convertSnakeToCamel} from '../utils/utils';
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 
-const movieId = generateRandomId(0, 900);
+const movieId = nanoid();
 
 const EMOTION = [
   'smile',
@@ -81,7 +82,7 @@ const getRandomPoster = () => {
 const alreadyWatched = () => Boolean(getRandomInteger(0,1));
 
 export const generateMovieData = () => ({
-  'id': movieId(),
+  'id': movieId,
   'comments': [
     Comments[0], Comments[1], Comments[2], Comments[3]
   ],
