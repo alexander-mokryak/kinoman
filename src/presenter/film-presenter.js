@@ -44,7 +44,6 @@ export default class FilmPresenter {
     this.#FilmDetailsComponent.setClickHandler(() => this.#removeFilmDetailsComponent(this.#FilmDetailsComponent));
 
     render(this.#FilmDetailsComponent, this.#container.element);
-    window.console.log('film', film.userDetails);
   }
 
 
