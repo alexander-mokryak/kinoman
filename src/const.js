@@ -26,8 +26,8 @@ const USER_STATUS = {
 const FilterType = {
   ALL: 'all',
   WATCHLIST: 'watchlist',
-  HISTORY: 'history',
-  FAVORITES: 'favorites'
+  HISTORY: 'alreadyWatched',
+  FAVORITES: 'favorite'
 };
 
 export {EMOTION_DATA, USER_STATUS, FilterType};

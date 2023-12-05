@@ -20,10 +20,15 @@ export default class FilmPresenter {
     this.#film = film;
     this.#FilmsComponent = new CardView(this.#film);
     this.#FilmsComponent.setClickHandler(() => this.#addFilmDetailsComponent(this.#film));
+    this.#FilmsComponent.setSortTypeChangeClickHandler(this.#handleSortTypeChange);
     render(this.#FilmsComponent, this.#container.element);
   }
 
 
+  // TODO Одновременно может быть открыт только один попап. При открытии нового попапа прежний закрывается,
+  //  например при клике на другую карточку при открытом попапе.
+  //  Несохранённые изменения (неотправленный комментарий) пропадают.
+  //  https://up.htmlacademy.ru/profession/react-lite/3/lite-javascript-2/2/homework-5-1
   #addFilmDetailsComponent = (film) => {
     this.#renderFilmDetails(film);
     document.body.classList.add('hide-overflow');
@@ -34,9 +39,7 @@ export default class FilmPresenter {
     //TODO const comments = [...this.#commentList.element];
     this.#FilmDetailsComponent = new PopupView(film);
 
-    this.#FilmDetailsComponent.setWatchListClickHandler(() => this.#addToWatchListClickHandler(this.#film));
-    this.#FilmDetailsComponent.setAlreadyWatchedClickHandler(() => this.#addToAlreadyWatchClickHandler(this.#film));
-    this.#FilmDetailsComponent.setFavoriteClickHandler(() => this.#addToFavoritesClickHandler(this.#film));
+    this.#FilmDetailsComponent.setFilmDetailsSortTypeChangeClickHandler(this.#handleSortTypeChange);
     document.addEventListener('keydown', this.#onEscKeyDown);
     this.#FilmDetailsComponent.setClickHandler(() => this.#removeFilmDetailsComponent(this.#FilmDetailsComponent));
 
@@ -61,36 +64,17 @@ export default class FilmPresenter {
   };
 
 
-  #addToWatchListClickHandler = () => {
+  #handleSortTypeChange = (sortType) => {
+    window.console.log(sortType);
+    window.console.log(this.#film.userDetails);
     this.#changeData = ({
       ...this.#film,
       userDetails: {
         ...this.#film.userDetails,
-        watchlist: !this.#film.userDetails.watchlist
+        [sortType]: !this.#film.userDetails[sortType]
       },
     });
-  };
-
-
-  #addToAlreadyWatchClickHandler = () => {
-    this.#changeData = ({
-      ...this.#film,
-      userDetails: {
-        ...this.#film.userDetails,
-        alreadyWatched: !this.#film.userDetails.alreadyWatched
-      },
-    });
-  };
-
-
-  #addToFavoritesClickHandler = () => {
-    this.#changeData = ({
-      ...this.#film,
-      userDetails: {
-        ...this.#film.userDetails,
-        favorite: !this.#film.userDetails.favorite
-      },
-    });
+    window.console.log(this.#changeData.userDetails);
   };
 
 

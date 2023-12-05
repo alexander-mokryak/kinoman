@@ -1,4 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
+import {FilterType} from '../const';
 
 const createCardViewTemplate = ({title, totalRating, poster}) =>
   `<article class="film-card">
@@ -15,9 +16,9 @@ const createCardViewTemplate = ({title, totalRating, poster}) =>
       <span class="film-card__comments">5 comments</span>
     </a>
     <div class="film-card__controls">
-      <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-      <button class="film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
-      <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
+      <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" data-sort-type=${FilterType.WATCHLIST} type="button">Add to watchlist</button>
+      <button class="film-card__controls-item film-card__controls-item--mark-as-watched" data-sort-type=${FilterType.HISTORY} type="button">Mark as watched</button>
+      <button class="film-card__controls-item film-card__controls-item--favorite" data-sort-type=${FilterType.FAVORITES} type="button">Mark as favorite</button>
     </div>
   </article>`;
 
@@ -39,12 +40,29 @@ export default class CardView extends AbstractView {
     // работать с добавлением/удалением обработчика где-то снаружи
     this._callback.click = callback;
     // в addEventListener передаем абстрактный обработчик
-    this.element.querySelector('a').addEventListener('click', this.#clickHandler);
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#clickHandler);
   };
 
   #clickHandler= (evt) => {
     evt.preventDefault();
     // внутри абстрактного обработчика вызовем callback
     this._callback.click();
+  };
+
+  setSortTypeChangeClickHandler = (callback) => {
+    // callback записывается во внутреннее свойство, иначе пришлось бы
+    // работать с добавлением/удалением обработчика где-то снаружи
+    this._callback.sortTypeChange = callback;
+    // в addEventListener передаем абстрактный обработчик
+    this.element.querySelector('.film-card__controls').addEventListener('click', this.#sortTypeChangeClickHandler);
+  };
+
+  #sortTypeChangeClickHandler= (evt) => {
+    if (evt.target.tagName !== 'BUTTON') {
+      return;
+    }
+    evt.preventDefault();
+    // внутри абстрактного обработчика вызовем callback
+    this._callback.sortTypeChange(evt.target.dataset.sortType);
   };
 }

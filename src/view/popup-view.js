@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import {EMOTION_DATA} from '../const.js';
+import {EMOTION_DATA, FilterType} from '../const.js';
 
 const createComments = (comments) => {
 
@@ -127,9 +127,9 @@ const createPopupTemplate = ({comments, filmInfo}) => `
         </div>
 
         <section class="film-details__controls">
-          <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-          <button type="button" class="film-details__control-button film-details__control-button--active film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-          <button type="button" class="film-details__control-button film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+          <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist" data-sort-type=${FilterType.WATCHLIST}>Add to watchlist</button>
+          <button type="button" class="film-details__control-button film-details__control-button--active film-details__control-button--watched" id="watched" name="watched" data-sort-type=${FilterType.HISTORY}>Already watched</button>
+          <button type="button" class="film-details__control-button film-details__control-button--favorite" id="favorite" name="favorite" data-sort-type=${FilterType.FAVORITES}>Add to favorites</button>
         </section>
       </div>
 
@@ -157,33 +157,6 @@ export default class PopupView extends AbstractView {
   };
 
 
-  setWatchListClickHandler = (callback) => {
-    // callback записывается во внутреннее свойство, иначе пришлось бы
-    // работать с добавлением/удалением обработчика где-то снаружи
-    this._callback.addToWatch = callback;
-    // в addEventListener передаем абстрактный обработчик
-    this.element.querySelector('#watchlist').addEventListener('click', this.#watchClickHandler);
-  };
-
-
-  setAlreadyWatchedClickHandler = (callback) => {
-    // callback записывается во внутреннее свойство, иначе пришлось бы
-    // работать с добавлением/удалением обработчика где-то снаружи
-    this._callback.watched = callback;
-    // в addEventListener передаем абстрактный обработчик
-    this.element.querySelector('#watched').addEventListener('click', this.#watchedClickHandler);
-  };
-
-
-  setFavoriteClickHandler = (callback) => {
-    // callback записывается во внутреннее свойство, иначе пришлось бы
-    // работать с добавлением/удалением обработчика где-то снаружи
-    this._callback.favorite = callback;
-    // в addEventListener передаем абстрактный обработчик
-    this.element.querySelector('#favorite').addEventListener('click', this.#favoriteClickHandler);
-  };
-
-
   #clickHandler= (evt) => {
     evt.preventDefault();
     // внутри абстрактного обработчика вызовем callback
@@ -191,23 +164,20 @@ export default class PopupView extends AbstractView {
   };
 
 
-  #watchClickHandler= (evt) => {
-    evt.preventDefault();
-    // внутри абстрактного обработчика вызовем callback
-    this._callback.addToWatch();
+  setFilmDetailsSortTypeChangeClickHandler = (callback) => {
+    // callback записывается во внутреннее свойство, иначе пришлось бы
+    // работать с добавлением/удалением обработчика где-то снаружи
+    this._callback.filmDetailsSortTypeChange = callback;
+    // в addEventListener передаем абстрактный обработчик
+    this.element.querySelector('.film-details__controls').addEventListener('click', this.#filmDetailsSortTypeChangeClickHandler);
   };
 
-
-  #watchedClickHandler= (evt) => {
+  #filmDetailsSortTypeChangeClickHandler= (evt) => {
+    if (evt.target.tagName !== 'BUTTON') {
+      return;
+    }
     evt.preventDefault();
     // внутри абстрактного обработчика вызовем callback
-    this._callback.watched();
-  };
-
-
-  #favoriteClickHandler= (evt) => {
-    evt.preventDefault();
-    // внутри абстрактного обработчика вызовем callback
-    this._callback.favorite();
+    this._callback.filmDetailsSortTypeChange(evt.target.dataset.sortType);
   };
 }
