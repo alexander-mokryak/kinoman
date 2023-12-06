@@ -64,8 +64,6 @@ export default class FilmPresenter {
 
 
   #handleSortTypeChange = (sortType) => {
-    window.console.log(sortType);
-    window.console.log(this.#film.userDetails);
     this.#changeData = ({
       ...this.#film,
       userDetails: {
@@ -73,7 +71,6 @@ export default class FilmPresenter {
         [sortType]: !this.#film.userDetails[sortType]
       },
     });
-    window.console.log(this.#changeData.userDetails);
   };
 
 

@@ -30,4 +30,10 @@ const FilterType = {
   FAVORITES: 'favorite'
 };
 
-export {EMOTION_DATA, USER_STATUS, FilterType};
+const SORT_TYPE = {
+  DEFAULT: 'default',
+  DATE: 'data',
+  RATING: 'rating',
+};
+
+export {EMOTION_DATA, USER_STATUS, FilterType, SORT_TYPE};

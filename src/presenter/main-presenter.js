@@ -1,4 +1,4 @@
-import {remove, render} from '../framework/render.js';
+import {remove, render, replace} from '../framework/render.js';
 import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
 import FilmsView from '../view/films-view';
@@ -9,51 +9,103 @@ import FilmsListExtraView from '../view/films-list-extra-view';
 import ErrorMoviesView from '../view/error-movies-view';
 import {generateFilter} from '../mock/filter.js';
 import FilmPresenter from './film-presenter';
-import {updateItem} from '../utils/utils';
+import {sortFilmsByDate, sortFilmsByRating, updateItem} from '../utils/utils';
+import {SORT_TYPE} from '../const';
 
 const SHOW_FILMS_PER_STEP = 5;
 
 export default class MainPresenter {
+  #currentSortType = SORT_TYPE.DEFAULT;
+  #sourcedFilms = null;
+  #sortComponent = null;
   #filmsComponent = new FilmsView();
   #filmsListComponent = new FilmsListView();
   #cardContainerComponent = new FilmsListContainerView();
   #errorComponent = new ErrorMoviesView();
   #showMoreButtonComponent = new ShowMoreView();
-  #filmPresenter = new Map();
+  #filmsPresenter = new Map();
 
   #container = null;
   #filmList = null;
   #films = [];
   #currentFilmIndex = 0;
 
-
   constructor(container, films) {
     this.#container = container;
     this.#filmList = films;
   }
 
-
   init() {
     this.#films = [...this.#filmList.filmList];
+    this.#sourcedFilms = [...this.#filmList.filmList];
     this.#renderBoard();
   }
 
-
   #filmChangeHandler = (updatedFilm) => {
     this.#films = updateItem(this.#films, updatedFilm);
-    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm);
+    this.#filmsPresenter.get(updatedFilm.id).init(updatedFilm);
   };
-
 
   #renderBoard() {
     this.#renderFilters(this.#films, this.#container);
     this.#renderSort(this.#container);
 
-    // блок с фильмами
+    // блок .films
     render(this.#filmsComponent, this.#container);
-    // основной блок с фильмами
+    // блок .films-list
     render(this.#filmsListComponent, this.#filmsComponent.element);
 
+    this.#renderFilms();
+
+    //extra блок с фильмами
+    for (let i = 0; i < 2; i++) {
+      render(new FilmsListExtraView(), this.#filmsComponent.element);
+    }
+  }
+
+  #renderFilters(films, container) {
+    const filterComponent = new FilterView(generateFilter(films));
+    render(filterComponent, container);
+  }
+
+  #sortFilms = (SortType) => {
+    switch (SortType) {
+      case SORT_TYPE.DATE:
+        this.#films.sort(sortFilmsByDate);
+        break;
+      case SORT_TYPE.RATING:
+        this.#films.sort(sortFilmsByRating);
+        break;
+      default:
+        this.#films = [...this.#sourcedFilms];
+    }
+    this.#currentSortType = SortType;
+  };
+
+  #sortTypeChangeHandler = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+    this.#sortFilms(sortType); //sortType - callback of sortTypeChangeHandler()
+    this.#clearFilmCards();
+    this.#renderSort(this.#container);
+    this.#renderFilms();
+  };
+
+  #renderSort(container) {
+    if (!this.#sortComponent) {
+      this.#sortComponent = new SortView(this.#currentSortType);
+      render(this.#sortComponent, container);
+    } else {
+      const updatedSortComponent = new SortView(this.#currentSortType);
+      replace(updatedSortComponent, this.#sortComponent);
+      this.#sortComponent = updatedSortComponent;
+    }
+
+    this.#sortComponent.setSortTypeClickHandler(this.#sortTypeChangeHandler);
+  }
+
+  #renderFilms() {
     if (this.#films.length > 0) {
       render(this.#cardContainerComponent, this.#filmsListComponent.element);
 
@@ -62,7 +114,7 @@ export default class MainPresenter {
         this.#currentFilmIndex += 1;
       }
       if (this.#films.length > 5) {
-        render(this.#showMoreButtonComponent, this.#filmsComponent.element);
+        render(this.#showMoreButtonComponent, this.#filmsListComponent.element);
       }
 
       this.#showMoreButtonComponent.setClickHandler(() => this.#handleShowMoreButtonClick());
@@ -70,36 +122,17 @@ export default class MainPresenter {
     } else {
       render(this.#errorComponent, this.#filmsListComponent.element);
     }
-
-    //extra блок с фильмами
-    for (let i = 0; i < 2; i++) {
-      render(new FilmsListExtraView(), this.#filmsComponent.element);
-    }
   }
-
-
-  #renderFilters(films, container) {
-    const filterComponent = new FilterView(generateFilter(films));
-    render(filterComponent, container);
-  }
-
-
-  #renderSort(container) {
-    const sortComponent = new SortView();
-    render(sortComponent, container);
-  }
-
 
   #renderFilmCard(film, container) {
     const filmPresenter = new FilmPresenter(container, this.#filmChangeHandler);
     filmPresenter.init(film);
-    this.#filmPresenter.set(film.id, filmPresenter);
+    this.#filmsPresenter.set(film.id, filmPresenter);
   }
 
-
   #clearFilmCards() {
-    this.#filmPresenter.forEach((presenter) => presenter.destroy());
-    this.#filmPresenter.clear();
+    this.#filmsPresenter.forEach((presenter) => presenter.destroy());
+    this.#filmsPresenter.clear();
     this.#currentFilmIndex = 0;
     remove(this.#showMoreButtonComponent);
   }
