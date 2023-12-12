@@ -1,3 +1,10 @@
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
+
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -83,7 +90,19 @@ const updateItem = (items, update) => {
   ];
 };
 
-const sortFilmsByDate = (filmA, filmB) => new Date(filmB.filmInfo.release.date) - new Date(filmA.filmInfo.release.date);
+//TODO проверь когда данные подойдут https://up.htmlacademy.ru/profession/react-lite/3/lite-javascript-2/2/homework-6-2
+const humanizeDate = (date) => {
+  const timeDiff = dayjs(date).diff(dayjs());
+  return dayjs.duration(timeDiff).humanize(true);
+};
+
+const formatStringToDate = (date) => dayjs(date).format('DD MMMM YYYY');
+
+const formatStringToYear = (date) => dayjs(date).format('YYYY');
+
+const formatMinutesToTime = (minutes) => dayjs.duration(minutes, 'minutes').format('H[h] mm[m]');
+
+const sortFilmsByDate = (filmA, filmB) => dayjs(filmB.filmInfo.release.date).diff(dayjs(filmA.filmInfo.release.date));
 
 const sortFilmsByRating = (filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating;
 
@@ -94,6 +113,10 @@ export {
   correctFilmTime,
   convertSnakeToCamel,
   updateItem,
+  humanizeDate,
+  formatStringToDate,
+  formatStringToYear,
+  formatMinutesToTime,
   sortFilmsByDate,
   sortFilmsByRating,
 };

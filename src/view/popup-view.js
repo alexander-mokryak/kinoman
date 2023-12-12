@@ -1,7 +1,9 @@
 import {EMOTION_DATA, FilterType} from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
+import {humanizeDate} from '../utils/utils';
 
 const createComments = (comments, checkedEmotion) => {
+  window.console.log(comments);
 
   const list = comments.map((comment) => (
     `<li className="film-details__comment">
@@ -13,7 +15,7 @@ const createComments = (comments, checkedEmotion) => {
         <p className="film-details__comment-text">${comment.comment}</p>
         <p className="film-details__comment-info">
           <span className="film-details__comment-author">${comment.author}</span>
-          <span className="film-details__comment-day">${comment.date}</span>
+          <span className="film-details__comment-day">${humanizeDate(comment.date)}</span>
           <button className="film-details__comment-delete">Delete</button>
         </p>
       </div>
