@@ -1,17 +1,21 @@
 const EMOTION_DATA = {
   'smile': {
+    'name': 'smile',
     'url': './images/emoji/smile.png',
     'alt': 'emoji-smile'
   },
   'sleeping': {
+    'name': 'sleeping',
     'url': './images/emoji/sleeping.png',
     'alt': 'emoji-sleeping'
   },
   'puke': {
+    'name': 'puke',
     'url': './images/emoji/puke.png',
     'alt': 'emoji-puke'
   },
   'angry': {
+    'name': 'angry',
     'url': './images/emoji/angry.png',
     'alt': 'emoji-angry'
   },

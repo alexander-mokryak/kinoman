@@ -39,9 +39,9 @@ export default class FilmPresenter {
     //TODO const comments = [...this.#commentList.element];
     this.#FilmDetailsComponent = new PopupView(film);
 
-    this.#FilmDetailsComponent.setFilmDetailsSortTypeChangeClickHandler(this.#handleSortTypeChange);
+    this.#FilmDetailsComponent.setSortTypeChangeClickHandler(this.#handleSortTypeChange);
     document.addEventListener('keydown', this.#onEscKeyDown);
-    this.#FilmDetailsComponent.setClickHandler(() => this.#removeFilmDetailsComponent(this.#FilmDetailsComponent));
+    this.#FilmDetailsComponent.setCloseButtonClickHandler(() => this.#removeFilmDetailsComponent(this.#FilmDetailsComponent));
 
     render(this.#FilmDetailsComponent, this.#container.element);
   }
