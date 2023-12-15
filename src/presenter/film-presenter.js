@@ -1,6 +1,7 @@
 import {remove, render} from '../framework/render.js';
 import CardView from '../view/card-view';
 import PopupView from '../view/popup-view';
+import {updateType, userAction} from '../utils/const.js';
 
 export default class FilmPresenter {
   #container = null;
@@ -64,13 +65,16 @@ export default class FilmPresenter {
 
 
   #handleSortTypeChange = (sortType) => {
-    this.#changeData = ({
-      ...this.#film,
-      userDetails: {
-        ...this.#film.userDetails,
-        [sortType]: !this.#film.userDetails[sortType]
-      },
-    });
+    this.#changeData = (
+      userAction.UPDATE_FILM,
+      updateType.PATCH,
+      {
+        ...this.#film,
+        userDetails: {
+          ...this.#film.userDetails,
+          [sortType]: !this.#film.userDetails[sortType]
+        },
+      });
   };
 
 

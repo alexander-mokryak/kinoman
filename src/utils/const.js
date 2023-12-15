@@ -40,4 +40,16 @@ const SORT_TYPE = {
   RATING: 'rating',
 };
 
-export {EMOTION_DATA, USER_STATUS, FilterType, SORT_TYPE};
+const userAction = {
+  UPDATE_FILM: 'UPDATE_FILM',
+  ADD_FILM: 'ADD_FILM',//
+  DELETE_FILM: 'DELETE_FILM',//
+};
+
+const updateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',//
+  MAJOR: 'MAJOR'//
+};
+
+export {EMOTION_DATA, USER_STATUS, FilterType, SORT_TYPE, userAction, updateType};

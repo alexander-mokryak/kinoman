@@ -1,9 +1,8 @@
-import {EMOTION_DATA, FilterType} from '../const.js';
+import {EMOTION_DATA, FilterType} from '../utils/const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import {humanizeDate} from '../utils/utils';
 
 const createComments = (comments, checkedEmotion) => {
-  window.console.log(comments);
 
   const list = comments.map((comment) => (
     `<li className="film-details__comment">

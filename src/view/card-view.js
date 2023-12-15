@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import {FilterType} from '../const';
+import {FilterType} from '../utils/const';
 
 const createCardViewTemplate = ({title, totalRating, poster}) =>
   `<article class="film-card">

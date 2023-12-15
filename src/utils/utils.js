@@ -76,20 +76,6 @@ const convertSnakeToCamel = (snake) =>
     group.toUpperCase().replace('-', '').replace('_', '')
   );
 
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 //TODO проверь когда данные подойдут https://up.htmlacademy.ru/profession/react-lite/3/lite-javascript-2/2/homework-6-2
 const humanizeDate = (date) => {
   const timeDiff = dayjs(date).diff(dayjs());
@@ -112,7 +98,6 @@ export {
   generateRandomId,
   correctFilmTime,
   convertSnakeToCamel,
-  updateItem,
   humanizeDate,
   formatStringToDate,
   formatStringToYear,

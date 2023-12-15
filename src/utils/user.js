@@ -1,4 +1,4 @@
-import {USER_STATUS} from '../const';
+import {USER_STATUS} from './const';
 
 const getUserStatus = (films) => {
 
