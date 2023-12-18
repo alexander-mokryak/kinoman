@@ -1,20 +1,25 @@
 import {render} from './framework/render.js';
 import MainPresenter from './presenter/main-presenter';
+import FilterPresenter from './presenter/filter-presenter';
 
 import ProfileView from './view/profile-view';
 import StatisticsView from './view/statistics-view';
 
-import FilmsModel from './Module/FilmsModel';
+import FilmsModel from './Module/films-model';
+import FilterModel from './Module/filter-model';
 import {getUserStatus} from './utils/user';
 
-const filmsModel = new FilmsModel();
-
 const headerElement = document.querySelector('.header');
-
-render(new ProfileView(getUserStatus(filmsModel.get())), headerElement);
-
 const mainElement = document.querySelector('.main');
-const mainContent = new MainPresenter(mainElement, filmsModel.get());
+
+const filmsModel = new FilmsModel();
+const filterModel = new FilterModel();
+const filterPresenter = new FilterPresenter(mainElement, filmsModel, filterModel);
+const mainContent = new MainPresenter(mainElement, filmsModel, filterModel);
+
+//header
+render(new ProfileView(getUserStatus(filmsModel.get())), headerElement);
+filterPresenter.init();
 mainContent.init();
 
 const footerElement = document.querySelector('.footer__statistics');

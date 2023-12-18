@@ -6,7 +6,7 @@ export default class FilmsModel extends Observable {
 
   get = () => this.#films;
 
-  update = (update) => {
+  update = (updateType, update) => {
     const index = this.#films.findIndex((film) => film.id === update.id);
 
     if (index === -1) {
@@ -19,6 +19,6 @@ export default class FilmsModel extends Observable {
       ...this.#films.slice(index + 1),
     ];
 
-    this._notify(update);
+    this._notify(updateType, update);
   };
 }
