@@ -1,19 +1,26 @@
-import {USER_STATUS} from './const';
+import {UserStatusValue, UserStatusTitle} from '../const';
 
 const getUserStatus = (films) => {
+  const watchedFilmCount = films.filter((film) =>
+    film.userDetails.alreadyWatched
+  ).length;
 
-  const watchedFilmCount = films.filter((film) => film.userDetails.alreadyWatched).length;
-
-  if (watchedFilmCount >= USER_STATUS.NOVICE && watchedFilmCount < USER_STATUS.FAN) {
-    return 'novice';
+  if (
+    watchedFilmCount > UserStatusValue.NOVICE &&
+    watchedFilmCount <= UserStatusValue.FAN
+  ) {
+    return UserStatusTitle.NOVICE;
   }
 
-  if (watchedFilmCount >= USER_STATUS.FAN && watchedFilmCount < USER_STATUS.MOVIE_BUFF) {
-    return 'fan';
+  if (
+    watchedFilmCount > UserStatusValue.FAN &&
+    watchedFilmCount <= UserStatusValue.MOVIE_BUFF
+  ) {
+    return UserStatusTitle.FAN;
   }
 
-  if (watchedFilmCount >= USER_STATUS.MOVIE_BUFF ) {
-    return 'movie buff';
+  if (watchedFilmCount > UserStatusValue.MOVIE_BUFF) {
+    return UserStatusTitle.MOVIE_BUFF;
   }
 
   return null;

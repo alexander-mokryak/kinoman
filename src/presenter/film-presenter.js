@@ -1,84 +1,90 @@
-import {remove, render} from '../framework/render.js';
-import CardView from '../view/card-view';
-import PopupView from '../view/popup-view';
-import {updateType, userAction} from '../utils/const.js';
+import FilmCardView from '../view/film-card-view.js';
+import {render, replace, remove} from '../framework/render.js';
+import {UserAction, UpdateType} from '../const.js';
 
 export default class FilmPresenter {
   #container = null;
-  #film = null;
-  #FilmsComponent = null;
-  #FilmDetailsComponent = null;
+
   #changeData = null;
+  #clickCardHandler = null;
+  #escKeyDownHandler = null;
 
+  #filmCardComponent = null;
 
-  constructor(container, changeData) {
+  #film = null;
+
+  constructor(container, changeData, clickCardHandler, escKeyDownHandler) {
     this.#container = container;
     this.#changeData = changeData;
+    this.#clickCardHandler = clickCardHandler;
+    this.#escKeyDownHandler = escKeyDownHandler;
   }
 
-
-  init(film) {
+  init = (film) => {
     this.#film = film;
-    this.#FilmsComponent = new CardView(this.#film);
-    this.#FilmsComponent.setClickHandler(() => this.#addFilmDetailsComponent(this.#film));
-    this.#FilmsComponent.setSortTypeChangeClickHandler(this.#handleSortTypeChange);
-    render(this.#FilmsComponent, this.#container.element);
-  }
 
+    const prevFilmCardComponent = this.#filmCardComponent;
 
-  // TODO Одновременно может быть открыт только один попап. При открытии нового попапа прежний закрывается,
-  //  например при клике на другую карточку при открытом попапе.
-  //  Несохранённые изменения (неотправленный комментарий) пропадают.
-  //  https://up.htmlacademy.ru/profession/react-lite/3/lite-javascript-2/2/homework-5-1
-  #addFilmDetailsComponent = (film) => {
-    this.#renderFilmDetails(film);
-    document.body.classList.add('hide-overflow');
-  };
+    this.#filmCardComponent = new FilmCardView(this.#film);
 
+    this.#filmCardComponent.setCardClickHandler(() => {
+      this.#clickCardHandler(this.#film);
+      document.addEventListener('keydown', this.#escKeyDownHandler);
+    });
+    this.#filmCardComponent.setWatchlistBtnClickHandler(this.#watchlistBtnClickHandler);
+    this.#filmCardComponent.setWatchedBtnClickHandler(this.#watchedBtnClickHandler);
+    this.#filmCardComponent.setFavoriteBtnClickHandler(this.#favoriteBtnClickHandler);
 
-  #renderFilmDetails(film) {
-    //TODO const comments = [...this.#commentList.element];
-    this.#FilmDetailsComponent = new PopupView(film);
-
-    this.#FilmDetailsComponent.setSortTypeChangeClickHandler(this.#handleSortTypeChange);
-    document.addEventListener('keydown', this.#onEscKeyDown);
-    this.#FilmDetailsComponent.setCloseButtonClickHandler(() => this.#removeFilmDetailsComponent(this.#FilmDetailsComponent));
-
-    render(this.#FilmDetailsComponent, this.#container.element);
-  }
-
-
-  #onEscKeyDown = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this.#FilmDetailsComponent.element.remove();
-      document.body.classList.remove('hide-overflow');
-      document.removeEventListener('keydown', this.#onEscKeyDown);
+    if (prevFilmCardComponent === null) {
+      render(this.#filmCardComponent, this.#container.element);
+      return;
     }
+
+    replace(this.#filmCardComponent, prevFilmCardComponent);
+
+    remove(prevFilmCardComponent);
   };
 
-
-  #removeFilmDetailsComponent = () => {
-    this.#FilmDetailsComponent.element.remove();
-    document.body.classList.remove('hide-overflow');
+  destroy = () => {
+    remove(this.#filmCardComponent);
   };
 
-
-  #handleSortTypeChange = (sortType) => {
-    this.#changeData = (
-      userAction.UPDATE_FILM,
-      updateType.PATCH,
+  #watchlistBtnClickHandler = () => {
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
       {
         ...this.#film,
         userDetails: {
           ...this.#film.userDetails,
-          [sortType]: !this.#film.userDetails[sortType]
+          watchlist: !this.#film.userDetails.watchlist
         },
       });
   };
 
+  #watchedBtnClickHandler = () => {
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      {
+        ...this.#film,
+        userDetails: {
+          ...this.#film.userDetails,
+          alreadyWatched: !this.#film.userDetails.alreadyWatched
+        }
+      });
+  };
 
-  destroy = () => {
-    remove(this.#FilmsComponent);
+  #favoriteBtnClickHandler = () => {
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      {
+        ...this.#film,
+        userDetails: {
+          ...this.#film.userDetails,
+          favorite: !this.#film.userDetails.favorite
+        }
+      });
   };
 }

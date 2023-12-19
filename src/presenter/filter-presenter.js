@@ -1,12 +1,14 @@
+import FilterView from '../view/filter-view.js';
 import {remove, render, replace} from '../framework/render.js';
-import {FilterType, updateType} from '../utils/const.js';
-import {filter} from '../utils/filter';
-import FilterView from '../view/filter-view';
+import {FilterType, UpdateType} from '../const.js';
+import {filter} from '../utils/filter.js';
 
 export default class FilterPresenter {
   #container = null;
   #filterComponent = null;
+
   #currentFilter = null;
+
   #filmsModel = null;
   #filterModel = null;
 
@@ -69,6 +71,7 @@ export default class FilterPresenter {
     if (this.#filterModel.get === filterType) {
       return;
     }
-    this.#filterModel.set(updateType.MAJOR, filterType);
+
+    this.#filterModel.set(UpdateType.MAJOR, filterType);
   };
 }
