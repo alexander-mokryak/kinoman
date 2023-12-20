@@ -38,9 +38,17 @@ const UserAction = {
 };
 
 const UpdateType = {
+  INIT: 'INIT',
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR'
+};
+
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE'
 };
 
 export {
@@ -53,5 +61,6 @@ export {
   UserStatusValue,
   UserStatusTitle,
   UserAction,
-  UpdateType
+  UpdateType,
+  Method
 };

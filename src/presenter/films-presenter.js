@@ -103,6 +103,9 @@ export default class FilmsPresenter {
         this.#clearFilmBoard({resetRenderedFilmCount: true, resetSortType: true});
         this.#renderFilmBoard();
         break;
+      case UpdateType.INIT:
+        this.#renderFilmBoard();
+        break;
     }
   };
 
@@ -181,8 +184,10 @@ export default class FilmsPresenter {
     this.#filmPresenter.set(film.id, filmPresenter);
   }
 
-  #renderFilmDetails() {
-    const comments = [...this.#commentsModel.get(this.#selectedFilm)];
+  #renderFilmDetails = async () => {
+    const comments = await this.#commentsModel.get(this.#selectedFilm);
+
+    const isCommentLoadingError = !comments;
 
     if (!this.#filmDetailsPresenter) {
       this.#filmDetailsPresenter = new FilmDetailsPresenter(
@@ -193,10 +198,12 @@ export default class FilmsPresenter {
       );
     }
 
-    document.addEventListener('keydown', this.#onCtrlEnterDown);
+    if (!isCommentLoadingError) {
+      document.addEventListener('keydown', this.#onCtrlEnterDown);
+    }
 
-    this.#filmDetailsPresenter.init(this.#selectedFilm, comments);
-  }
+    this.#filmDetailsPresenter.init(this.#selectedFilm, comments, isCommentLoadingError);
+  };
 
   #renderFilmBoard() {
     const films = this.films.slice(0, Math.min(this.films.length, FILM_COUNT_PER_STEP));
