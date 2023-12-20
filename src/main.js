@@ -1,18 +1,15 @@
-import HeaderProfileView from './view/header-profile-view.js';
-import FooterStatisticView from './view/footer-statistics-view.js';
-
 import FilmsPresenter from './presenter/films-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
+import HeaderProfilePresenter from './presenter/header-profile-presenter';
+import FooterStatisticsPresenter from './presenter/footer-presenter';
 import FilmsModel from './model/films-model.js';
 import CommentsModel from './model/comments-model.js';
 import FilterModel from './model/filter-model.js';
 
-import {render} from './framework/render.js';
-import {getUserStatus} from './utils/user.js';
-import FilmsApiService from './api-services/films-api-service';
-import CommentsApiService from './api-services/comments-api-service';
+import FilmsApiService from './api-services/films-api-service.js';
+import CommentsApiService from './api-services/comments-api-service.js';
 
-const AUTHORIZATION = 'Basic hS2sfS44wel1sa2j';
+const AUTHORIZATION = 'Basic hS2sfS44wcl1sa2j';
 const END_POINT = 'https://18.ecmascript.pages.academy/cinemaddict';
 
 const bodyElement = document.querySelector('body');
@@ -25,15 +22,13 @@ const filmsModel = new FilmsModel(new FilmsApiService(END_POINT, AUTHORIZATION))
 const commentsModel = new CommentsModel(new CommentsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
 
+const headerProfilePresenter = new HeaderProfilePresenter(siteHeaderElement, filmsModel);
+const footerStatisticsPresenter = new FooterStatisticsPresenter(siteFooterStatisticsElement, filmsModel);
 const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, commentsModel, filterModel);
 const filterPresenter = new FilterPresenter(siteMainElement, filmsModel, filterModel);
 
-const userStatus = getUserStatus(filmsModel.get());
-const filmCount = filmsModel.get().length;
-
-render(new HeaderProfileView(userStatus), siteHeaderElement);
-render(new FooterStatisticView(filmCount), siteFooterStatisticsElement);
-
+headerProfilePresenter.init();
+footerStatisticsPresenter.init();
 filterPresenter.init();
 filmsPresenter.init();
 filmsModel.init();
