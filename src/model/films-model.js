@@ -53,7 +53,7 @@ export default class FilmsModel extends Observable {
         ...film['film_info'],
         alternativeTitle: film['film_info']['alternative_title'],
         totalRating: film['film_info']['total_rating'],
-        ageRating: film['film_info']['age_rating']
+        ageRating: film['film_info']['age_rating'],
       },
       userDetails: {
         ...film['user_details'],
@@ -72,4 +72,48 @@ export default class FilmsModel extends Observable {
 
     return adaptedFilm;
   }
+
+  updateOnClient = async ({updateType, update, isAdapted}) => {
+    const index = this.#films.findIndex((film) => film.id === update.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t update unexisting film');
+    }
+
+    const updatedFilm = (!isAdapted)
+      ? this.#adaptToClient(update)
+      : update;
+
+    this.#films = [
+      ...this.#films.slice(0, index),
+      updatedFilm,
+      ...this.#films.slice(index + 1),
+    ];
+
+    this._notify(updateType, updatedFilm);
+  };
+
+  updateOnServer = async (updateType, update) => {
+    const index = this.#films.findIndex((film) => film.id === update.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t update unexisting film');
+    }
+
+    try {
+      const response = await this.#apiService.update(update);
+
+      const updatedFilm = this.#adaptToClient(response);
+
+      this.#films = [
+        ...this.#films.slice(0, index),
+        updatedFilm,
+        ...this.#films.slice(index + 1),
+      ];
+
+      this._notify(updateType, updatedFilm);
+    } catch {
+      throw new Error('Can\'t update film');
+    }
+  };
 }

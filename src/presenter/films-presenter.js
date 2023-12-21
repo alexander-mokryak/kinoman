@@ -2,16 +2,23 @@ import SortView from '../view/sort-view.js';
 import FilmsView from '../view/films-view.js';
 import FilmListView from '../view/film-list-view.js';
 import FilmListEmptyView from '../view/film-list-empty-view.js';
+import FilmListLoadingView from '../view/film-list-loading-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmButtonMoreView from '../view/film-button-more-view.js';
 
 import FilmPresenter from '../presenter/film-presenter.js';
 import FilmDetailsPresenter from './film-details-presenter.js';
 
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import {render, remove, replace} from '../framework/render.js';
 import {sortFilmsByDate, sortFilmsByRating} from '../utils/film.js';
 import {FILM_COUNT_PER_STEP, SortType, UserAction, UpdateType, FilterType} from '../const.js';
 import {filter} from '../utils/filter.js';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class FilmsPresenter {
   #sortComponent = null;
@@ -20,6 +27,7 @@ export default class FilmsPresenter {
   #filmListContainerComponent = new FilmListContainerView();
   #filmButtonMoreComponent = new FilmButtonMoreView();
   #filmListEmptyComponent = new FilmListEmptyView();
+  #filmListLoadingComponent = new FilmListLoadingView();
 
   #container = null;
   #filmsModel = null;
@@ -28,11 +36,14 @@ export default class FilmsPresenter {
 
   #selectedFilm = null;
   #currentSortType = SortType.DEFAULT;
+  #isLoading = true;
 
   #filmPresenter = new Map();
   #filmDetailsPresenter = null;
 
   #renderedFilmCount = FILM_COUNT_PER_STEP;
+
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   constructor(container, filmsModel, commentsModel, filterModel) {
     this.#container = container;
@@ -64,21 +75,57 @@ export default class FilmsPresenter {
     this.#renderFilmBoard();
   };
 
-  #viewActionHandler = (actionType, updateType, updateFilm, updateComment) => {
+  #viewActionHandler = async (actionType, updateType, updateFilm, updateComment) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this.#filmsModel.update(updateType, updateFilm);
+        if (
+          this.#filmPresenter.get(updateFilm.id) &&
+          !this.#filmDetailsPresenter
+        ) {
+          this.#filmPresenter.get(updateFilm.id).setFilmEditing();
+        }
+
+        if (this.#filmDetailsPresenter) {
+          this.#filmDetailsPresenter.setFilmEditing();
+        }
+
+        try {
+          await this.#filmsModel.updateOnServer(updateType, updateFilm);
+        } catch {
+          if (
+            this.#filmPresenter.get(updateFilm.id) &&
+            !this.#filmDetailsPresenter
+          ) {
+            this.#filmPresenter.get(updateFilm.id).setAborting();
+          }
+
+          if (this.#filmDetailsPresenter) {
+            this.#filmDetailsPresenter.setAborting({actionType});
+          }
+        }
         break;
       case UserAction.ADD_COMMENT:
-        this.#commentsModel.add(updateType, updateComment);
-        this.#filmDetailsPresenter.clearViewData();
-        this.#filmsModel.update(updateType, updateFilm);
+        this.#filmDetailsPresenter.setCommentCreating();
+        try {
+          await this.#commentsModel.add(updateType, updateFilm, updateComment);
+          this.#filmDetailsPresenter.clearViewData();
+        } catch {
+          this.#filmDetailsPresenter.setAborting({actionType});
+        }
         break;
       case UserAction.DELETE_COMMENT:
-        this.#commentsModel.delete(updateType, updateComment);
-        this.#filmsModel.update(updateType, updateFilm);
+        this.#filmDetailsPresenter.setCommentDeleting(updateComment.id);
+        try {
+          await this.#commentsModel.delete(updateType, updateFilm, updateComment);
+        } catch {
+          this.#filmDetailsPresenter.setAborting({actionType, commentId: updateComment.id});
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #modelEventHandler = (updateType, data) => {
@@ -104,6 +151,8 @@ export default class FilmsPresenter {
         this.#renderFilmBoard();
         break;
       case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#filmListLoadingComponent);
         this.#renderFilmBoard();
         break;
     }
@@ -208,7 +257,12 @@ export default class FilmsPresenter {
   #renderFilmBoard() {
     const films = this.films.slice(0, Math.min(this.films.length, FILM_COUNT_PER_STEP));
 
-    if (films.length === 0) {
+    if (this.#isLoading) {
+      render(this.#filmListLoadingComponent, this.#container);
+      return;
+    }
+
+    if (!this.#isLoading && films.length === 0) {
       render(this.#filmListEmptyComponent, this.#container);
       return;
     }

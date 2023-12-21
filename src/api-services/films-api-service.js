@@ -25,7 +25,7 @@ export default class FilmsApiService extends ApiService {
         ...film.filmInfo,
         ['alternative_title']: film.filmInfo.alternativeTitle,
         ['total_rating']: film.filmInfo.totalRating,
-        ['age_rating']: film.filmInfo.ageRating
+        ['age_rating']: film.filmInfo.ageRating,
       },
       ['user_details']: {
         ...film.userDetails,
@@ -35,10 +35,10 @@ export default class FilmsApiService extends ApiService {
     };
 
     delete adaptedFilm.filmInfo;
-    delete adaptedFilm.userDetails;
     delete adaptedFilm['film_info'].alternativeTitle;
     delete adaptedFilm['film_info'].totalRating;
     delete adaptedFilm['film_info'].ageRating;
+    delete adaptedFilm.userDetails;
     delete adaptedFilm['user_details'].alreadyWatched;
     delete adaptedFilm['user_details'].watchingDate;
 
