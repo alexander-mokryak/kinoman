@@ -22,7 +22,7 @@ export default class CommentsModel extends Observable {
 
       this.#comments = response.comments;
 
-      this.#filmsModel.updateOnClient({
+      await this.#filmsModel.updateOnClient({
         updateType,
         update: response.movie,
         isAdapted: false
@@ -52,7 +52,7 @@ export default class CommentsModel extends Observable {
         ]
       };
 
-      this.#filmsModel.updateOnClient({
+      await this.#filmsModel.updateOnClient({
         updateType,
         update: updateFilm,
         isAdapted: true
